@@ -2,9 +2,8 @@
 
 import argparse
 import collections
-import sys
 import xml.etree.ElementTree as ET
-from jinja2 import Template, Environment
+from jinja2 import Environment
 import os
 from pkg_resources import resource_string
 
@@ -45,8 +44,8 @@ class Visitor:
         elif type_name == 'CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtItem':
             self.last_source_file = fix_slashes(node.attrib['persistent'])
         elif type_name == 'CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtFile':
-            assert self.last_build_action != None
-            assert self.last_source_file != None
+            assert self.last_build_action is not None
+            assert self.last_source_file is not None
 
             if self.last_build_action in self.interesting_build_actions:
                 # Little hack... I don't know how to exclude C_FILEs from
@@ -89,9 +88,12 @@ def main():
         'project_name', metavar='project-name', help='The project name.')
     argparser.add_argument('cyprj', help='The cyprj file.')
     argparser.add_argument(
-        '--cross', help='Cross compiler prefix (default: arm-none-eabi).', default='arm-none-eabi')
+        '--cross', help='Cross compiler prefix (default: arm-none-eabi).',
+        default='arm-none-eabi')
     argparser.add_argument(
-        '--objdir', help='The output directory (default: ./CortexM3/ARM_GCC_493/Debug).', default='./CortexM3/ARM_GCC_493/Debug')
+        '--objdir',
+        help='The output directory (default: ./CortexM3/ARM_GCC_493/Debug).',
+        default='./CortexM3/ARM_GCC_493/Debug')
     args = argparser.parse_args()
 
     # Prepare template environment
@@ -110,7 +112,8 @@ def main():
 
     # Output the Makefile
     print(template.render(projname=args.project_name,
-                          cross=args.cross, objdir=args.objdir, visitor=visitor))
+                          cross=args.cross, objdir=args.objdir,
+                          visitor=visitor))
 
 if __name__ == '__main__':
     main()
