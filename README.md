@@ -10,6 +10,12 @@ editor and PSoC Creator when fixing build errors.  PSoC Creator offers the
 possibility to export the "workspace" to a few IDEs, including Eclipse, but I
 found their integration a bit sketchy, and it's Windows-specific anyway.
 
+I started from my build log and tried to replicate the steps as much as possible.
+The result is close enough for my needs to the real thing, but not quite exactly
+the same.  In particular, it's a bit confusing how PSoC Creator decides which
+C files should be built and which shouldn't, which objects go in the ```.a```
+archive, etc.
+
 After building on the Linux host, PSoC creator seems to recognize the .o files
 that were built by the Makefile and does not rebuild them.  It only does the
 final linking again, which is not too long.  The GCC version I use on my host
