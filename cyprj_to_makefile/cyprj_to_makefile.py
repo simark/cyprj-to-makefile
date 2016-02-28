@@ -84,8 +84,6 @@ def main():
     # Parse args
     argparser = argparse.ArgumentParser(
         description='Generate Makefile from Cypress cyprj.')
-    argparser.add_argument(
-        'project_name', metavar='project-name', help='The project name.')
     argparser.add_argument('cyprj', help='The cyprj file.')
     argparser.add_argument(
         '--cross', help='Cross compiler prefix (default: arm-none-eabi).',
@@ -102,6 +100,8 @@ def main():
     env.filters['replace_ext'] = replace_ext
     env.filters['prefix'] = prefix
 
+    projname, unused = os.path.splitext(os.path.basename(args.cyprj))
+
     template_str = resource_string(__name__, 'Makefile.tpl').decode()
     template = env.from_string(template_str)
 
@@ -111,8 +111,9 @@ def main():
     visit(tree.getroot(), visitor)
 
     # Output the Makefile
-    print(template.render(projname=args.project_name,
-                          cross=args.cross, objdir=args.objdir,
+    print(template.render(projname=projname,
+                          cross=args.cross,
+                          objdir=args.objdir,
                           visitor=visitor))
 
 if __name__ == '__main__':
