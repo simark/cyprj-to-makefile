@@ -1,6 +1,6 @@
 When working on a Cypress PSoC project, building the code with PSoC Creator is
 extremely slow, especially when it's running in a VM.  I made this small tool
-that generates Makefiles from PSoC Creator's cyprj files, so that I could build
+that generates Makefiles from PSoC Creator's ```.cyprj``` files, so that I could build
 the code on my Linux host.  Since the code is in a shared directory with the
 VM, I can still use PSoC Creator to do the programming.
 
@@ -29,12 +29,12 @@ Simply run (with sudo if needed):
 
 # How to use
 
-Go to your PSoC Creator project directory, where the .cyprj file can be found.
+Go to your PSoC Creator project directory, where the ```.cyprj``` file can be found.
 
-You will need to copy one library, CyComponentLibrary.a, from the PSoC Creator
+You will need to copy one library, ```CyComponentLibrary.a```, from the PSoC Creator
 installation to your project directory.  However, PSoC Creator provides multiple
 versions of it, for various configurations and processors.  To know which one<
-you need, search for "CyComponentLibrary.a" in the build log.  For example, mine
+you need, search for ```CyComponentLibrary``` in the build log.  For example, mine
 was at
 
     C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\CyComponentLibrary\CyComponentLibrary.cylib\CortexM3\ARM_GCC_493\Debug\CyComponentLibrary.a
