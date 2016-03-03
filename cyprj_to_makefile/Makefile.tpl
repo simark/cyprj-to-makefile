@@ -7,6 +7,9 @@ AS = $(CROSS)-as
 {% set arm_c_objs = visitor.source_files['ARM_C_FILE'] | map('basename') | map('replace_ext', 'o') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
 {% set gnu_arm_asm_objs = visitor.source_files['GNU_ARM_ASM_FILE'] | map('basename') | map('replace_ext', 'o') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
 
+{% set c_deps = visitor.source_files['C_FILE'] | map('basename') | map('replace_ext', 'd') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
+{% set arm_c_deps = visitor.source_files['ARM_C_FILE'] | map('basename') | map('replace_ext', 'd') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
+
 CFLAGS = {{ visitor.additional_cflags | join(' ') }}
 
 .PHONY: all
@@ -16,7 +19,9 @@ all: {{ objdir }}/{{ projname }}.elf
 clean:
 	rm -f \
 	  {{ c_objs }} \
+	  {{ c_deps }} \
 	  {{ arm_c_objs }} \
+	  {{ arm_c_deps }} \
 	  {{ gnu_arm_asm_objs }} \
 	   {{ objdir }}/{{ projname }}.a \
 	  {{ objdir }}/{{ projname }}.elf
@@ -41,6 +46,9 @@ clean:
 	$(CC) -mcpu=cortex-m3 -mthumb -Wno-main {{ visitor.include_dirs | map('prefix', '-I') | join(' ') }} -I. -IGenerated_Source/PSoC5 \
 	  -Wa,-alh={{ objdir }}/{{ c_file | basename | replace_ext('lst') }} -g -D DEBUG $(CFLAGS) -ffunction-sections -Og -ffat-lto-objects -c \
 	  {{ c_file }} -o {{ objdir }}/{{ c_file | basename | replace_ext('o') }}
+	$(CC) -mcpu=cortex-m3 -mthumb -Wno-main {{ visitor.include_dirs | map('prefix', '-I') | join(' ') }} -I. -IGenerated_Source/PSoC5 \
+	  -Wa,-alh={{ objdir }}/{{ c_file | basename | replace_ext('lst') }} -g -D DEBUG $(CFLAGS) -ffunction-sections -Og -ffat-lto-objects -c \
+	  {{ c_file }} -MM -MT {{ objdir }}/{{ c_file | basename | replace_ext('o') }} > {{ objdir }}/{{ c_file | basename | replace_ext('d') }}
 {% endfor %}
 
 # ARM C files
@@ -49,6 +57,9 @@ clean:
 	$(CC) -mcpu=cortex-m3 -mthumb -Wno-main {{ visitor.include_dirs | map('prefix', '-I') | join(' ') }} -I. -IGenerated_Source/PSoC5 \
 	  -Wa,-alh={{ objdir }}/{{ arm_c_file | basename | replace_ext('lst') }} -g -D DEBUG $(CFLAGS) -ffunction-sections -Og -ffat-lto-objects -c \
 	  {{ arm_c_file }} -o {{ objdir }}/{{ arm_c_file | basename | replace_ext('o') }}
+	$(CC) -mcpu=cortex-m3 -mthumb -Wno-main {{ visitor.include_dirs | map('prefix', '-I') | join(' ') }} -I. -IGenerated_Source/PSoC5 \
+	  -Wa,-alh={{ objdir }}/{{ arm_c_file | basename | replace_ext('lst') }} -g -D DEBUG $(CFLAGS) -ffunction-sections -Og -ffat-lto-objects -c \
+	  {{ arm_c_file }} -MM -MT {{ objdir }}/{{ arm_c_file | basename | replace_ext('o') }} > {{ objdir }}/{{ arm_c_file | basename | replace_ext('d') }}
 {% endfor %}
 
 # GNU ARM ASM files
@@ -57,3 +68,5 @@ clean:
 	$(AS) -mcpu=cortex-m3 -mthumb -I. -IGenerated_Source/PSoC5 -alh={{ objdir }}/{{ gnu_arm_asm_file | basename | replace_ext('lst') }} -g -W \
 	  -o {{ objdir }}/{{ gnu_arm_asm_file | basename | replace_ext('o') }} {{ gnu_arm_asm_file }}
 {% endfor %}
+
+-include {{ c_deps }} {{ arm_c_deps }}
