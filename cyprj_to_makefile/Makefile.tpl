@@ -10,6 +10,10 @@ AS = $(CROSS)-as
 {% set c_deps = visitor.source_files['C_FILE'] | map('basename') | map('replace_ext', 'd') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
 {% set arm_c_deps = visitor.source_files['ARM_C_FILE'] | map('basename') | map('replace_ext', 'd') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
 
+{% set c_lst = visitor.source_files['C_FILE'] | map('basename') | map('replace_ext', 'lst') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
+{% set arm_c_lst = visitor.source_files['ARM_C_FILE'] | map('basename') | map('replace_ext', 'lst') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
+
+
 CFLAGS = {{ visitor.additional_cflags | join(' ') }}
 
 .PHONY: all
@@ -17,14 +21,15 @@ all: {{ objdir }}/{{ projname }}.elf
 
 .PHONY: clean
 clean:
-	rm -f \
-	  {{ c_objs }} \
-	  {{ c_deps }} \
-	  {{ arm_c_objs }} \
-	  {{ arm_c_deps }} \
-	  {{ gnu_arm_asm_objs }} \
-	   {{ objdir }}/{{ projname }}.a \
-	  {{ objdir }}/{{ projname }}.elf
+	rm -f {{ c_objs }}
+	rm -f {{ c_deps }}
+	rm -f {{ c_lst }}
+	rm -f {{ arm_c_objs }}
+	rm -f {{ arm_c_deps }}
+	rm -f {{ arm_c_lst }}
+	rm -f {{ gnu_arm_asm_objs }}
+	rm -f {{ objdir }}/{{ projname }}.a
+	rm -f {{ objdir }}/{{ projname }}.elf
 
 # ELF file
 
