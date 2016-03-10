@@ -39,6 +39,8 @@ class Visitor:
     def __call__(self, node):
         type_name = node.attrib.get('type_name')
 
+        if node.tag == 'Hidden':
+            self.last_hidden = node.attrib['v'] == 'True'
         if node.tag == 'build_action':
             self.last_build_action = node.attrib['v']
         elif type_name == 'CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtItem':
@@ -50,7 +52,7 @@ class Visitor:
             if self.last_build_action in self.interesting_build_actions:
                 # Little hack... I don't know how to exclude C_FILEs from
                 # components.
-                if '/API/' not in self.last_source_file:
+                if '/API/' not in self.last_source_file and not self.last_hidden:
                     self.source_files[self.last_build_action].append(
                         self.last_source_file)
         elif node.tag == 'name_val_pair':
