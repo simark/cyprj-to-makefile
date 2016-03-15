@@ -2,6 +2,7 @@ CROSS = {{ cross }}
 CC = $(CROSS)-gcc
 AR = $(CROSS)-ar
 AS = $(CROSS)-as
+SIZE = $(CROSS)-size
 
 {% set c_objs = visitor.source_files['C_FILE'] | map('basename') | map('replace_ext', 'o') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
 {% set arm_c_objs = visitor.source_files['ARM_C_FILE'] | map('basename') | map('replace_ext', 'o') | map('prefix', '/') | map('prefix', objdir) | join(' ') %}
@@ -39,6 +40,9 @@ clean:
 	  -mcpu=cortex-m3 -mthumb -g -ffunction-sections -Og -L Generated_Source/PSoC5 \
 	  -Wl,-Map,{{ objdir }}/{{ projname }}.map -T Generated_Source/PSoC5/cm3gcc.ld \
 	  -specs=nano.specs -Wl,--gc-sections -Wl,--end-group
+	@echo
+	$(SIZE) -x -A {{ objdir }}/{{ projname }}.elf
+
 
 # Archive
 
